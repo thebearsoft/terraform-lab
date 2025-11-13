@@ -1,0 +1,56 @@
+# Kafka JMX metrics configuration for Prometheus
+lowercaseOutputName: true
+rules:
+  # Kafka server metrics
+  - pattern: kafka.server<type=(.+), name=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+  - pattern: kafka.server<type=(.+), name=(.+), clientId=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      clientId: "$3"
+  - pattern: kafka.server<type=(.+), name=(.+), topic=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      topic: "$3"
+  - pattern: kafka.server<type=(.+), name=(.+), topic=(.+), partition=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      topic: "$3"
+      partition: "$4"
+  
+  # Network request metrics
+  - pattern: kafka.network<type=(.+), name=(.+)><>Value
+    name: kafka_network_$1_$2
+    type: GAUGE
+  - pattern: kafka.network<type=(.+), name=(.+), request=(.+)><>Value
+    name: kafka_network_$1_$2
+    type: GAUGE
+    labels:
+      request: "$3"
+  
+  # Log metrics
+  - pattern: kafka.log<type=(.+), name=(.+)><>Value
+    name: kafka_log_$1_$2
+    type: GAUGE
+  - pattern: kafka.log<type=(.+), name=(.+), topic=(.+), partition=(.+)><>Value
+    name: kafka_log_$1_$2
+    type: GAUGE
+    labels:
+      topic: "$3"
+      partition: "$4"
+  
+  # Controller metrics
+  - pattern: kafka.controller<type=(.+), name=(.+)><>Value
+    name: kafka_controller_$1_$2
+    type: GAUGE
+  
+  # Consumer lag metrics
+  - pattern: kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.+)><>(.+)
+    name: kafka_consumer_fetch_manager_$2
+    type: GAUGE
+    labels:
+      client_id: "$1"

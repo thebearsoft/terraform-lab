@@ -1,0 +1,44 @@
+# Zookeeper JMX metrics configuration for Prometheus
+lowercaseOutputName: true
+rules:
+  # Zookeeper server metrics
+  - pattern: org.apache.ZooKeeperService<name0=(.+)><>(.+)
+    name: zookeeper_$2
+    type: GAUGE
+    labels:
+      replicaId: "$1"
+  
+  # Zookeeper connection metrics
+  - pattern: org.apache.ZooKeeperService<name0=(.+), name1=(.+)><>(.+)
+    name: zookeeper_$2_$3
+    type: GAUGE
+    labels:
+      replicaId: "$1"
+  
+  # Quorum metrics
+  - pattern: org.apache.ZooKeeperService<name0=(.+), name1=(.+), name2=(.+)><>(.+)
+    name: zookeeper_$2_$3_$4
+    type: GAUGE
+    labels:
+      replicaId: "$1"
+  
+  # Request processor metrics
+  - pattern: org.apache.ZooKeeperService<name0=(.+), name1=InMemoryDataTree><>(.+)
+    name: zookeeper_data_tree_$2
+    type: GAUGE
+    labels:
+      replicaId: "$1"
+  
+  # Leader election metrics
+  - pattern: org.apache.ZooKeeperService<name0=(.+), name1=Leader, name2=(.+), name3=(.+)><>(.+)
+    name: zookeeper_leader_$2_$3_$4
+    type: GAUGE
+    labels:
+      replicaId: "$1"
+  
+  # Follower metrics
+  - pattern: org.apache.ZooKeeperService<name0=(.+), name1=Follower, name2=(.+)><>(.+)
+    name: zookeeper_follower_$2_$3
+    type: GAUGE
+    labels:
+      replicaId: "$1"

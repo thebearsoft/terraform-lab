@@ -1,0 +1,54 @@
+yamlApplicationConfig:
+  kafka:
+    clusters:
+      - name: kafka-cluster
+        bootstrapServers: ${kafka_bootstrap_servers}
+        readOnly: false
+      %{~ if schema_registry_url != "" ~}
+        schemaRegistry: ${schema_registry_url}
+      %{~ endif ~}
+      %{~ if kafka_connect_url != "" ~}
+        kafkaConnect:
+          - name: connect-cluster
+            address: ${kafka_connect_url}
+      %{~ endif ~}
+  auth:
+    type: "LOGIN_FORM"
+  spring:
+    security:
+      user:
+        name: ${admin_user}
+        password: ${admin_password}
+
+resources:
+  requests:
+    memory: ${memory_request}
+    cpu: ${cpu_request}
+  limits:
+    memory: ${memory_limit}
+    cpu: ${cpu_limit}
+
+%{~ if ingress_enabled ~}
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: kafka-ui.local
+      paths:
+        - path: /
+          pathType: Prefix
+%{~ endif ~}
+
+service:
+  type: ClusterIP
+  port: 8080
+
+# Enable JVM metrics
+existingConfigMap: ""
+envs:
+  config:
+    DYNAMIC_CONFIG_ENABLED: 'true'
+    KAFKA_CLUSTERS_0_NAME: kafka-cluster
+    KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: ${kafka_bootstrap_servers}

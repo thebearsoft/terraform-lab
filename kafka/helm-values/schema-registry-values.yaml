@@ -1,0 +1,44 @@
+replicaCount: ${replicas}
+
+image:
+  repository: confluentinc/cp-schema-registry
+  tag: "7.5.1"
+  pullPolicy: IfNotPresent
+
+kafka:
+  bootstrapServers: ${kafka_bootstrap_servers}
+
+resources:
+  requests:
+    memory: ${memory_request}
+    cpu: ${cpu_request}
+  limits:
+    memory: ${memory_limit}
+    cpu: ${cpu_limit}
+
+configurationOverrides:
+  kafkastore.bootstrap.servers: ${kafka_bootstrap_servers}
+  kafkastore.topic: "_schemas"
+  kafkastore.topic.replication.factor: 3
+  debug: "false"
+
+service:
+  type: ClusterIP
+  port: 8081
+
+## Schema Registry JVM Heap Option
+heapOptions: "-Xms256M -Xmx256M"
+
+## Schema Registry JVM Performance Options
+jvmPerformanceOpts: "-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent -Djava.awt.headless=true"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8081"
+  prometheus.io/path: "/metrics"
